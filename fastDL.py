@@ -10,6 +10,7 @@ import PIL
 import spacy
 import html
 import subprocess
+import os
 
 spacy.load("en")
 re1 = re.compile(r'  +')
@@ -20,6 +21,10 @@ def loadTextFile(fileName):
 
 def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=True).decode("utf-8").split("\n")[:-1]
+
+def makeDirectory(directory):
+  if not os.path.exists(directory):
+    os.makedirs(directory)
 
 def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #This function creates a new directory called "name", with subdirectories:
@@ -33,13 +38,13 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #This function should work in other cases as well, but it is not
   #guaranteed.  If they are empty strings, this function will ignore them.
   print("Making directories...")
-  !mkdir {name}
+  makeDirectory(name)
   %cd {name}
-  !mkdir trainingData
-  !mkdir validationData
-  !mkdir models
-  !mkdir csvs
-  !mkdir misc
+  makeDirectory("trainingData")
+  makeDirectory("validationData")
+  makeDirectory("models")
+  makeDirectory("csvs")
+  makeDirectory("misc")
   if trainingDataPath != "":
     print(f"copying {trainingDataPath}")
     !cp -r ../{trainingDataPath} trainingData
@@ -490,7 +495,7 @@ class ModelDirectory:
     %cd {self.name}/validationData
     stringToAppend = "/".join(foldersToPrepend)
     for folder in foldersToPrepend:
-      !mkdir {folder}
+      makeDirectory(folder)
       %cd {folder}
     %cd /{curdirec}/{self.name}
     !cp -r trainingData/{fileLocation} validationData/{stringToAppend}
