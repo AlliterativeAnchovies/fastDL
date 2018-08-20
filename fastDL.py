@@ -26,6 +26,9 @@ def makeDirectory(directory):
   if not os.path.exists(directory):
     os.makedirs(directory)
 
+def mimicCDOnPath(path,cdInput):
+  return os.path.join(path,cdInput)
+
 def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #This function creates a new directory called "name", with subdirectories:
   # "trainingData", "validationData", "models", "csvs", "misc"
@@ -39,42 +42,42 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #guaranteed.  If they are empty strings, this function will ignore them.
   print("Making directories...")
   makeDirectory(name)
-  %cd {name}
-  makeDirectory("trainingData")
-  makeDirectory("validationData")
-  makeDirectory("models")
-  makeDirectory("csvs")
-  makeDirectory("misc")
+  extraPath = name
+  makeDirectory(f"{extraPath}/trainingData")
+  makeDirectory(f"{extraPath}/validationData")
+  makeDirectory(f"{extraPath}/models")
+  makeDirectory(f"{extraPath}/csvs")
+  makeDirectory(f"{extraPath}/misc")
   if trainingDataPath != "":
     print(f"copying {trainingDataPath}")
-    !cp -r ../{trainingDataPath} trainingData
-    %cd trainingData
+    !cp -r {extraPath}/../{trainingDataPath} trainingData
+    extraPath = mimicCDOnPath(extraPath,"trainingData")
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
-      !gzip -d {trainingDataPath}
+      !gzip -d {extraPath}/{trainingDataPath}
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
-      !tar xopf {trainingDataPath}
+      !tar xopf {extraPath}/{trainingDataPath}
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
-      !unzip -qq {trainingDataPath}
+      !unzip -qq {extraPath}/{trainingDataPath}
   if validationDataPath != "":
-    %cd ..
+    extraPath = mimicCDOnPath(extraPath,"..")
     print(f"copying {validationDataPath}")
-    !cp -r ../{validationDataPath} validationData
-    %cd validationData
+    !cp -r {extraPath}/../{validationDataPath} validationData
+    extraPath = mimicCDOnPath(extraPath,"validationData")
     if validationDataPath[-3:] == ".gz":
       print(f"unzipping {validationDataPath}")
-      !gzip -d {validationDataPath}
+      !gzip -d {extraPath}/{validationDataPath}
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
-      !tar xopf {validationDataPath}
+      !tar xopf {extraPath}/{validationDataPath}
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
-      !unzip -qq {validationDataPath}
-  %cd ../..
+      !unzip -qq {extraPath}/{validationDataPath}
+  #%cd ../..
   print("Finished")
 
 class Task:
