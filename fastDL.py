@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import PIL
 import spacy
 import html
+import subprocess
 
 spacy.load("en")
 re1 = re.compile(r'  +')
@@ -16,6 +17,9 @@ re1 = re.compile(r'  +')
 def loadTextFile(fileName):
   toReturn = Path(fileName).open('r').read()#!cat {fileName} >/dev/null
   return toReturn
+
+def bashLS(directory):
+  return subprocess.check_output(["ls","-1",directory],shell=True).decode("utf-8").split("\n")[:-1]
 
 def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #This function creates a new directory called "name", with subdirectories:
@@ -185,10 +189,10 @@ class Task:
     #The simplest func would be to remove file endings, so that is the default
     if annotateFunc == None:
       annotateFunc = dataFunc
-    self.allDataFiles_t = !ls -1 {self.direcIn.name}/trainingData/{self.rawData}
-    self.allAnnotationFiles_t = !ls -1 {self.direcIn.name}/trainingData/{self.annotations}
-    self.allDataFiles_v = !ls -1 {self.direcIn.name}/validationData/{self.rawData}
-    self.allAnnotationFiles_v = !ls -1 {self.direcIn.name}/validationData/{self.annotations}
+    self.allDataFiles_t = bashLS(f"{self.direcIn.name}/trainingData/{self.rawData}")
+    self.allAnnotationFiles_t = bashLS(f"{self.direcIn.name}/trainingData/{self.annotations}")
+    self.allDataFiles_v = bashLS(f"{self.direcIn.name}/validationData/{self.rawData}")
+    self.allAnnotationFiles_v = bashLS(f"{self.direcIn.name}/validationData/{self.annotations}")
 	
     #Apply the match functions
     datas = list(map(lambda x: map(lambda y: (dataFunc(y),y),x),[self.allDataFiles_t,self.allDataFiles_v,]))
@@ -260,8 +264,8 @@ class Task:
     #First we have to create the training and validation dictionaries
     for f in folderCategories:
       #We want to match up the f/filename with [f] (made an array b/c of multilabel classifying)
-      self.allDataFiles_t = !ls -1 {self.direcIn.name}/trainingData/{self.rawData}/{f}
-      self.allDataFiles_v = !ls -1 {self.direcIn.name}/validationData/{self.rawData}/{f}
+      self.allDataFiles_t = bashLS(f"{self.direcIn.name}/trainingData/{self.rawData}/{f}")
+      self.allDataFiles_v = bashLS(f"{self.direcIn.name}/validationData/{self.rawData}/{f}")
       for a in self.allDataFiles_t:
         self.trainingDict[f"{f}/{a}"] = [f]
       for a in self.allDataFiles_v:
