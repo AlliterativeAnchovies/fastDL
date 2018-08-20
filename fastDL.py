@@ -22,6 +22,9 @@ def loadTextFile(fileName):
 def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=True).decode("utf-8").split("\n")[:-1]
 
+def bashCP(cpFrom,cpTo):
+  subprocess.check_output(["cp","-r",cpFrom,cpTo],shell=True)
+
 def makeDirectory(directory):
   if not os.path.exists(directory):
     os.makedirs(directory)
@@ -50,7 +53,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   makeDirectory(f"{extraPath}/misc")
   if trainingDataPath != "":
     print(f"copying {trainingDataPath}")
-    !cp -r {extraPath}/../{trainingDataPath} trainingData
+    bashCP(f"{extraPath}/../{trainingDataPath}","trainingData")
     extraPath = mimicCDOnPath(extraPath,"trainingData")
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
@@ -65,7 +68,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   if validationDataPath != "":
     extraPath = mimicCDOnPath(extraPath,"..")
     print(f"copying {validationDataPath}")
-    !cp -r {extraPath}/../{validationDataPath} validationData
+    bashCP(f"{extraPath}/../{validationDataPath}","validationData")
     extraPath = mimicCDOnPath(extraPath,"validationData")
     if validationDataPath[-3:] == ".gz":
       print(f"unzipping {validationDataPath}")
@@ -501,6 +504,6 @@ class ModelDirectory:
       makeDirectory(folder)
       %cd {folder}
     %cd /{curdirec}/{self.name}
-    !cp -r trainingData/{fileLocation} validationData/{stringToAppend}
+    bashCP(f"trainingData/{fileLocation}",f"validationData/{stringToAppend}")
     %cd /{curdirec}
                      
