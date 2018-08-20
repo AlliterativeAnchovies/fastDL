@@ -32,7 +32,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   #Folders should be passed with a /. at the end
   #This function should work in other cases as well, but it is not
   #guaranteed.  If they are empty strings, this function will ignore them.
-  !echo "Making directories..."
+  print("Making directories...")
   !mkdir {name}
   %cd {name}
   !mkdir trainingData
@@ -41,36 +41,36 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   !mkdir csvs
   !mkdir misc
   if trainingDataPath != "":
-    !echo "copying "{trainingDataPath}
+    print(f"copying {trainingDataPath}")
     !cp -r ../{trainingDataPath} trainingData
     %cd trainingData
     if trainingDataPath[-3:] == ".gz":
-      !echo "unzipping "{trainingDataPath}
+      print(f"unzipping {trainingDataPath}")
       !gzip -d {trainingDataPath}
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
-      !echo "unzipping "{trainingDataPath}
+      print(f"unzipping {trainingDataPath}")
       !tar xopf {trainingDataPath}
     if trainingDataPath[-4:] == ".zip":
-      !echo "unzipping "{trainingDataPath}
+      print(f"unzipping {trainingDataPath}")
       !unzip -qq {trainingDataPath}
   if validationDataPath != "":
     %cd ..
-    !echo "copying "{validationDataPath}
+    print(f"copying {validationDataPath}")
     !cp -r ../{validationDataPath} validationData
     %cd validationData
     if validationDataPath[-3:] == ".gz":
-      !echo "unzipping "{validationDataPath}
+      print(f"unzipping {validationDataPath}")
       !gzip -d {validationDataPath}
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
-      !echo "unzipping "{validationDataPath}
+      print(f"unzipping {validationDataPath}")
       !tar xopf {validationDataPath}
     if validationDataPath[-4:] == ".zip":
-      !echo "unzipping "{validationDataPath}
+      print(f"unzipping {validationDataPath}")
       !unzip -qq {validationDataPath}
   %cd ../..
-  !echo "Finished"
+  print("Finished")
 
 class Task:
 	
