@@ -37,4 +37,4 @@ theTask.trainModel()
 
 -----
 
-I apologize if the faastDL_examples notebook becomes out of date, I am updating this very frequently.  I will try to keep it up to date, but if something every goes wrong, feel free to check out the source code to see if a method's parameters have changed.
+I apologize if the fastDL_examples notebook becomes out of date, I am updating this very frequently.  I will try to keep it up to date, but if something every goes wrong, feel free to check out the source code to see if a method's parameters have changed.
