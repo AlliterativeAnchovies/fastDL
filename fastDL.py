@@ -28,7 +28,7 @@ def bashCP(cpFrom,cpTo):
   copier.copy(cpFrom,cpTo)
 
 def bash(inputs):
-  return subprocess.check_output(inputs,shell=True)
+  return subprocess.call(inputs,shell=True)
 
 def makeDirectory(directory):
   if not os.path.exists(directory):
