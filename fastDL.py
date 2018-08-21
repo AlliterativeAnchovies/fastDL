@@ -40,13 +40,13 @@ def bashCP(cpFrom,cpTo):
 #https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
 def copytree(src, dst, symlinks=False, ignore=None):
   for item in os.listdir(src):
+    if not os.path.isdir(item):#one would think os.listdir would only give directories
+      continue                 #however, one would be wrong.
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
     if os.path.isdir(s):
-      print(d)
       copier.copytree(s, d, symlinks, ignore)
     else:
-      print(d)
       copier.copy(s, d)
 	
 def bash(inputs,shell=True):
