@@ -47,8 +47,8 @@ def copytree(src, dst, symlinks=False, ignore=None):
     else:
       copier.copy2(s, d)
 	
-def bash(inputs):
-  return subprocess.check_output(inputs,shell=True)
+def bash(inputs,shell=True):
+  return subprocess.check_output(inputs,shell=shell)
 
 def makeDirectory(directory):
   if not os.path.exists(directory):
@@ -90,7 +90,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
       #!tar xopf {extraPath}/{trainingDataPath}
-      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"])
+      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
@@ -111,7 +111,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
       #!tar xopf {extraPath}/{validationDataPath}
-      bash(["tar","xopf",f"{extraPath}/{validationDataPath}"])
+      bash(["tar","xopf",f"{extraPath}/{validationDataPath}"],shell=False)
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
       #!unzip -qq {extraPath}/{validationDataPath}
