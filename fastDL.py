@@ -86,10 +86,10 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
       try:
-        bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
+        #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
+	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
-      #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
@@ -112,10 +112,10 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bash(["gzip","-d",f"{extraPath}/{validationDataPath}"])
       #bashGZIP(f"{extraPath}/{validationDataPath}")
       try:
-        bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
+        #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
+	bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
       except:
         pass
-      #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
@@ -342,8 +342,8 @@ class Task:
   def prepTextDataForFastAI(self,csvname = "textdata",chunksize = 2000,vocabularySize = 6000,minimumWordFrequency = 2):
     self.typeOfData = "TEXT"
     #prep data for pandas-ification
-    trainingTexts,trainingLabels = ( list(zip(*  imdbTempTask.trainingDict.items()  ))  )
-    validationTexts,validationLabels = ( list(zip(*  imdbTempTask.validationDict.items()  ))  )
+    trainingTexts,trainingLabels = ( list(zip(*  self.trainingDict.items()  ))  )
+    validationTexts,validationLabels = ( list(zip(*  self.validationDict.items()  ))  )
 	
     #convert files to the actual texts
     print("Opening text files...")
