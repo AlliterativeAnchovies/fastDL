@@ -505,14 +505,16 @@ class ModelDirectory:
     return None
   
   def extractJumbledValidation(self,foldersToPrepend,fileLocation):
-    curdirec = !pwd
-    curdirec = curdirec[0]
-    %cd {self.name}/validationData
+    #curdirec = !pwd
+    #curdirec = curdirec[0]
+    #%cd {self.name}/validationData
+    curdirec = f"{self.name}/validationData"
     stringToAppend = "/".join(foldersToPrepend)
     for folder in foldersToPrepend:
-      makeDirectory(folder)
-      %cd {folder}
-    %cd /{curdirec}/{self.name}
-    bashCP(f"trainingData/{fileLocation}",f"validationData/{stringToAppend}")
-    %cd /{curdirec}
+      makeDirectory(f"{curdirec}/{folder}")
+      #%cd {folder}
+      mimicCDOnPath(curdirec,folder)
+    #%cd /{curdirec}/{self.name}
+    bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
+    #%cd /{curdirec}
                      
