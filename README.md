@@ -17,13 +17,24 @@ Dependencies: fastAI, spacy
 
 Here is a quick example of code you can run in colaboratoy right now to make a dogs/cats classifier like is done in the first fastAI lesson:
 
+----
+
 !wget http://files.fast.ai/data/dogscats.zip
+
 modelDirec = ModelDirectory("dogsVcats",trainingDataPath = "dogscats.zip",validationDataPath = "")
+
 modelDirec.extractJumbledValidation(["dogscats","train"],"dogscats/valid/.")
+
 theTask = modelDirec.giveTask("classification","dogscats/train",folderCategories=["cats","dogs"])
+
 theTask.prepImageDataForFastAI()
+
 theTask.createModel()
+
 theTask.trainModel()
+
 #Model is now fully trained.  You can directly access it with "theTask.fastAIModel"
+
+-----
 
 I apologize if the faastDL_examples notebook becomes out of date, I am updating this very frequently.  I will try to keep it up to date, but if something every goes wrong, feel free to check out the source code to see if a method's parameters have changed.
