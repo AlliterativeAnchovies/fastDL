@@ -22,7 +22,7 @@ def loadTextFile(fileName):
   return toReturn
 
 def bashLS(directory):
-  return subprocess.check_output(["ls","-1",directory],shell=True).decode("utf-8").split("\n")[:-1]
+  return subprocess.check_output(["ls","-1",directory],shell=False).decode("utf-8").split("\n")[:-1]
 
 def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
