@@ -25,7 +25,6 @@ def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=False).decode("utf-8").split("\n")[:-1]
 
 def bashCP(cpFrom,cpTo):
-  #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
   if os.path.isdir(cpFrom):
     shutil.copytree(cpFrom,cpTo)
   else:
@@ -66,7 +65,6 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     extraPath = mimicCDOnPath(extraPath,"trainingData")
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
-      #!gzip -d {extraPath}/{trainingDataPath}
       try:
         bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
@@ -74,11 +72,9 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
-      #!tar xopf {extraPath}/{trainingDataPath}
       bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
-      #!unzip -qq {extraPath}/{trainingDataPath}
       bash(["unzip","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}"],shell=False)
   if validationDataPath != "":
     extraPath = name
@@ -87,24 +83,16 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     extraPath = mimicCDOnPath(extraPath,"validationData")
     if validationDataPath[-3:] == ".gz":
       print(f"unzipping {validationDataPath}")
-      #!gzip -d {extraPath}/{validationDataPath}
-      #bash(["gzip","-d",f"{extraPath}/{validationDataPath}"])
-      #bashGZIP(f"{extraPath}/{validationDataPath}")
       try:
-        #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
         bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
       except:
         pass
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
-      #!tar xopf {extraPath}/{validationDataPath}
-      #bash(["tar","xopf",f"{extraPath}/{validationDataPath}"],shell=False)
       bash(["tar","xopf",f"{extraPath}/{validationDataPath}","--directory",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
-      #!unzip -qq {extraPath}/{validationDataPath}
-      #bash(["unzip","-qq",f"{extraPath}/{validationDataPath}"])
       bash(["unzip","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"],shell=False)
   #%cd ../..
   print("Finished")
@@ -522,17 +510,11 @@ class ModelDirectory:
     return None
   
   def extractJumbledValidation(self,foldersToPrepend,fileLocation):
-    #curdirec = !pwd
-    #curdirec = curdirec[0]
-    #%cd {self.name}/validationData
     curdirec = f"{self.name}/validationData"
     stringToAppend = "/".join(foldersToPrepend)
     for folder in foldersToPrepend:
       makeDirectory(f"{curdirec}/{folder}")
-      #%cd {folder}
       mimicCDOnPath(curdirec,folder)
-    #%cd /{curdirec}/{self.name}
     print(f"{self.name}/validationData/{stringToAppend}")
     bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
-    #%cd /{curdirec}
                      
