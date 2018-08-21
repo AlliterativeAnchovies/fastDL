@@ -26,12 +26,22 @@ def bashLS(directory):
 
 def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
-  if cpFrom[-2:] == "/.":
+  """if cpFrom[-2:] == "/.":
     #copying directory
     for f in bashLS(cpFrom[:-2]):
       bashCP(f"{cpFrom[:-2]}/{f}",cpTo)
   else:#copying file
-    copier.copy(cpFrom,cpTo)
+    copier.copy(cpFrom,cpTo)"""
+  copytree(cpFrom,cpTo)
+
+def copytree(src, dst, symlinks=False, ignore=None):
+  for item in os.listdir(src):
+    s = os.path.join(src, item)
+    d = os.path.join(dst, item)
+    if os.path.isdir(s):
+      shutil.copytree(s, d, symlinks, ignore)
+    else:
+      shutil.copy2(s, d)
 	
 def bash(inputs):
   return subprocess.check_output(inputs,shell=True)
