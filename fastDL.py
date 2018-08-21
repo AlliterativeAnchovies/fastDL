@@ -28,7 +28,7 @@ def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
   if cpFrom[-2:] == "/.":
     #copying directory
-    for f in bashLS[cpFrom[:-2]]:
+    for f in bashLS(cpFrom[:-2]):
       bashCP(f"{cpFrom[:-2]}/{f}",cpTo)
   else:#copying file
     copier.copy(cpFrom,cpTo)
