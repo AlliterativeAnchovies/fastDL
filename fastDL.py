@@ -76,7 +76,6 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   makeDirectory(f"{extraPath}/models")
   makeDirectory(f"{extraPath}/csvs")
   makeDirectory(f"{extraPath}/misc")
-  print("WHY THE HELL IS NOTHING PRINTING????????")
   if trainingDataPath != "":
     print(f"copying {trainingDataPath}")
     bashCP(f"{trainingDataPath}",f"{extraPath}/trainingData")
@@ -86,17 +85,11 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #!gzip -d {extraPath}/{trainingDataPath}
       #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
-      print("WHY THE HELL IS NOTHING PRINTING????????")
       try:
         #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
-        print("--------")
-        print('/'.join((trainingDataPath.split('/')[:-1])))
-        print(f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}")
-        print("--------")
         bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
         pass #for some stupid reason, gzip works but throws an error
-      print("WHY THE HELL IS NOTHING PRINTING????????")
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
