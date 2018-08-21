@@ -42,7 +42,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
   for item in os.listdir(src):
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
-    print(f"{s},{d}")
+    print(f"{src},{dst},{item}")
     if os.path.exists(d):
       shutil.rmtree(d)
     if not os.path.isdir(s):
