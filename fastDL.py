@@ -93,7 +93,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
         print('/'.join((trainingDataPath.split('/')[:-1])))
         print(f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}")
         print("--------")
-	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
+        bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
       print("WHY THE HELL IS NOTHING PRINTING????????")
@@ -120,7 +120,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bashGZIP(f"{extraPath}/{validationDataPath}")
       try:
         #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
-	bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
+        bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
       except:
         pass
       validationDataPath = validationDataPath[:-3]
