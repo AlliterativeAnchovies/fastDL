@@ -24,21 +24,25 @@ def loadTextFile(fileName):
 def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=False).decode("utf-8").split("\n")[:-1]
 
-def bashCP(cpFrom,cpTo):
+"""def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
-  """if cpFrom[-2:] == "/.":
-    #copying directory
-    for f in bashLS(cpFrom[:-2]):
-      bashCP(f"{cpFrom[:-2]}/{f}",cpTo)
-  else:#copying file
-    shutil.copy(cpFrom,cpTo)"""
   if os.path.isdir(cpFrom):
     copytree(cpFrom,cpTo)
+  else:
+    shutil.copy(cpFrom,cpTo)"""
+
+def bashCP(cpFrom,cpTo):
+  #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
+  if os.path.isdir(cpFrom):
+    filesInDirectory = bashLS(cpFrom)
+    os.mkdir(os.path.join(cpTo,cpFrom))
+    for f in filesInDirectory:
+      bashCP(os.path.join(cpFrom,f),os.path.join(cpTo,cpFrom))
   else:
     shutil.copy(cpFrom,cpTo)
 
 #https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
-def copytree(src, dst, symlinks=False, ignore=None):
+"""def copytree(src, dst, symlinks=False, ignore=None):
   for item in os.listdir(src):
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
@@ -48,7 +52,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
     if not os.path.isdir(s):
       shutil.copy(s,dst)
     elif os.path.isdir(s):
-      shutil.copytree(s, d, symlinks, ignore)
+      shutil.copytree(s, d, symlinks, ignore)"""
 	
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
