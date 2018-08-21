@@ -43,13 +43,14 @@ def copytree(src, dst, symlinks=False, ignore=None):
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
     if os.path.exists(d):
+      print(d)
       shutil.rmtree(d)
-    if not os.path.isdir(s):#one would think os.listdir would only give directories
-      copier.copy(s,d)      #however, one would be wrong
+    if not os.path.isdir(s):
+      copier.copy(s,d)
     elif os.path.isdir(s):
       copier.copytree(s, d, symlinks, ignore)
-    else:
-      copier.copy(s,d)
+    #else:
+    #  copier.copy(s,d)
 	
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
