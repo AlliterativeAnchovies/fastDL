@@ -30,7 +30,7 @@ def bashCP(cpFrom,cpTo):
 	
 def bashGZIP(toUnzip):
   with gzip.open(toUnzip, 'rb') as f_in:
-    with open('file.txt', 'wb') as f_out:
+    with open(toUnzip[:-3], 'wb') as f_out:
       copier.copyfileobj(f_in, f_out)
 	
 def bash(inputs):
