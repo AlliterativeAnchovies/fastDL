@@ -79,7 +79,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
-      bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"])
+      bash(["unzip",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}","-d"])
   if validationDataPath != "":
     extraPath = name
     print(f"copying {validationDataPath}")
@@ -105,7 +105,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       print(f"unzipping {validationDataPath}")
       #!unzip -qq {extraPath}/{validationDataPath}
       #bash(["unzip","-qq",f"{extraPath}/{validationDataPath}"])
-      bash(["unzip","-qq",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"])
+      bash(["unzip","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"])
   #%cd ../..
   print("Finished")
 
