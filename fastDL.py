@@ -45,7 +45,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
     if os.path.isdir(s):
       copier.copytree(s, d, symlinks, ignore)
     else:
-      copier.copy2(s, d)
+      copier.copy(s, d)
 	
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
