@@ -1,4 +1,3 @@
-
 import xml.etree.ElementTree as ET
 import csv
 from fastai.text import *
@@ -98,6 +97,16 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       bash(["unzip","-o","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"],shell=False)
   #%cd ../..
   print("Finished")
+
+class Prediction:
+  def __init__(self,allClasses,logPredictionValues):
+    self.allClasses = allClasses
+    self.logPredictionValues = logPredictionValues
+    self.predictionPercents = np.exp(logPredictionValues)
+    self.zipped = list(zip(self.allClasses,self.predictionPercents))
+  
+  def __str__(self):
+    return str(self.zipped)
 
 class Task:
 	
@@ -401,7 +410,7 @@ class Task:
     else:
       print("Error - Task has no type.  You can fix this with Task.setType('IMAGE' or 'TEXT')")
   
-  
+		  
 
   def trainModel(self,learningRate = 0.2, epochs = 1, startingCycleEpochLength = 1, subsequentCycleEpochLengthMultiplier = 1):
     print("Starting training...  This may take a long time.")
@@ -415,28 +424,32 @@ class Task:
     print("Predictions stored.")
   
   #predicts given an index in the validation set
-  def predictFromIndex(self,n): return self.fastAIModel.predict_array(self.fastAIData.val_ds[n][0][None])
+  def predictFromIndex(self,n):
+    #return list(zip(self.allClasses,np.exp(self.fastAIModel.predict_array(self.fastAIData.val_ds[n][0][None])[0])))
+    return Prediction(self.allClasses,self.fastAIModel.predict_array(self.fastAIData.val_ds[n][0][None])[0])
 
   #predicts given an array of raw data
   #Warning - the array is unlikely to be scaled properly if you pass it in, because there is preprocessing that fastAI does
   #If doing image processing, you are much better off using predictFromImageFile
-  def predictFromArray(self,arrayToPredictFrom): return self.fastAIModel.predict_array(arrayToPredictFrom[None])
+  def predictFromArray(self,arrayToPredictFrom):
+    #return list(zip(self.allClasses,np.exp(self.fastAIModel.predict_array(arrayToPredictFrom[None])[0])))
+    return Prediction(self.allClasses,self.fastAIModel.predict_array(arrayToPredictFrom[None])[0])
 
   #Given an absolute file name, it will predict the output
   def predictFromImageFile(self,fileName): return self.predictFromArray(self.curTransformsFromModel(open_image(fileName)))
 
   def saveModel():
     self.fastAIModel.save(f"{self.direcIn.name}/models/{self.name}")
-  
+
   def loadModel():
     self.fastAIModel = ConvLearner.pretrained(self.curArchitecture, self.fastAIData).load(f"{self.direcIn.name}/models/{self.name}")
-  
+
 
   #The grab random display code is taken pretty much verbatim from here, although names changed to fit with theme
   #https://github.com/fastai/fastai/blob/master/courses/dl1/lesson1.ipynb
   #def randomByMask(self,mask,amount = 4): return np.random.choice(np.where(mask)[0], amount, replace=False)
   #def getRandomValidationFromCorrectness(self,is_correct=True,amount = 4): return self.randomByMask((self.booleanPredictions == self.fastAIData.val_y)==is_correct, amount)
-
+  
   def plots(self,ims, figsize=(12,6), rows=1, titles=None):
     f = plt.figure(figsize=figsize)
     for i in range(len(ims)):
@@ -455,7 +468,7 @@ class Task:
       imgs = [self.load_img_id(self.fastAIData.val_ds,x) for x in idxs]
       title_probs = [f"{self.fastAIData.val_ds.fnames[x].split('/')[-1]} :{self.predictionProbabilities[x]}" for x in idxs]
       return self.plots(imgs, rows=1, titles=title_probs, figsize=(16,8))
-  
+
   #Next three functions taken directly from link below, meant for loading data from a pandas dataframe correctly
   #https://github.com/fastai/fastai/blob/master/courses/dl2/imdb.ipynb
   def fixup(self,x):
@@ -464,7 +477,7 @@ class Task:
         '<br />', "\n").replace('\\"', '"').replace('<unk>','u_n').replace(' @.@ ','.').replace(
         ' @-@ ','-').replace('\\', ' \\ ')
     return re1.sub(' ', html.unescape(x))
-  
+
   def get_texts(self,df, n_lbls=1):
     labels = df.iloc[:,range(n_lbls)].values.astype(np.int64)
     texts = f'\nxbos xfld 1 ' + df[n_lbls].astype(str)
@@ -525,3 +538,4 @@ class ModelDirectory:
       curdirec = mimicCDOnPath(curdirec,folder)
     bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
     print("Extracting over.")
+
