@@ -86,7 +86,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
       try:
-        bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
+        bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
       #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
@@ -112,7 +112,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bash(["gzip","-d",f"{extraPath}/{validationDataPath}"])
       #bashGZIP(f"{extraPath}/{validationDataPath}")
       try:
-        bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
+        bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
       except:
         pass
       #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
