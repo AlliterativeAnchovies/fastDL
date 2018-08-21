@@ -24,32 +24,12 @@ def loadTextFile(fileName):
 def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=False).decode("utf-8").split("\n")[:-1]
 
-"""def bashCP(cpFrom,cpTo):
-  #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
-  if os.path.isdir(cpFrom):
-    copytree(cpFrom,cpTo)
-  else:
-    shutil.copy(cpFrom,cpTo)"""
-
 def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
   if os.path.isdir(cpFrom):
     shutil.copytree(cpFrom,cpTo)
   else:
     shutil.copy(cpFrom,cpTo)
-
-#https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
-"""def copytree(src, dst, symlinks=False, ignore=None):
-  for item in os.listdir(src):
-    s = os.path.join(src, item)
-    d = os.path.join(dst, item)
-    print(f"{src},{dst},{item}")
-    if os.path.exists(d):
-      shutil.rmtree(d)
-    if not os.path.isdir(s):
-      shutil.copy(s,dst)
-    elif os.path.isdir(s):
-      shutil.copytree(s, d, symlinks, ignore)"""
 	
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
@@ -87,10 +67,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
       #!gzip -d {extraPath}/{trainingDataPath}
-      #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
-      #bashGZIP(f"{extraPath}/{trainingDataPath}")
       try:
-        #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
         bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
         pass #for some stupid reason, gzip works but throws an error
@@ -98,13 +75,11 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
       #!tar xopf {extraPath}/{trainingDataPath}
-      #bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"],shell=False)
       bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
-      #bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}"])
-      bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
+      bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-4]}"])
   if validationDataPath != "":
     extraPath = name
     print(f"copying {validationDataPath}")
@@ -130,7 +105,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       print(f"unzipping {validationDataPath}")
       #!unzip -qq {extraPath}/{validationDataPath}
       #bash(["unzip","-qq",f"{extraPath}/{validationDataPath}"])
-      bash(["unzip","-qq",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
+      bash(["unzip","-qq",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-4]}"])
   #%cd ../..
   print("Finished")
 
