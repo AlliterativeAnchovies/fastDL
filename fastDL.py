@@ -56,7 +56,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   makeDirectory(f"{extraPath}/misc")
   if trainingDataPath != "":
     print(f"copying {trainingDataPath}")
-    bashCP(f"{extraPath}/../{trainingDataPath}","trainingData")
+    bashCP(f"{extraPath}/../{trainingDataPath}","{extraPath}/trainingData")
     extraPath = mimicCDOnPath(extraPath,"trainingData")
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
@@ -74,7 +74,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
   if validationDataPath != "":
     extraPath = mimicCDOnPath(extraPath,"..")
     print(f"copying {validationDataPath}")
-    bashCP(f"{extraPath}/../{validationDataPath}","validationData")
+    bashCP(f"{extraPath}/../{validationDataPath}","{extraPath}/validationData")
     extraPath = mimicCDOnPath(extraPath,"validationData")
     if validationDataPath[-3:] == ".gz":
       print(f"unzipping {validationDataPath}")
