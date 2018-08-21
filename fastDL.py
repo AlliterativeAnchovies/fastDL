@@ -85,12 +85,17 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #!gzip -d {extraPath}/{trainingDataPath}
       #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
-      bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
+      try:
+        bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
+      except:
+	pass #for some stupid reason, gzip works but throws an error
+      #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
       #!tar xopf {extraPath}/{trainingDataPath}
-      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"],shell=False)
+      #bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"],shell=False)
+      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
@@ -106,12 +111,17 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #!gzip -d {extraPath}/{validationDataPath}
       #bash(["gzip","-d",f"{extraPath}/{validationDataPath}"])
       #bashGZIP(f"{extraPath}/{validationDataPath}")
-      bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
+      try:
+        bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
+      except:
+        pass
+      #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
       #!tar xopf {extraPath}/{validationDataPath}
-      bash(["tar","xopf",f"{extraPath}/{validationDataPath}"],shell=False)
+      #bash(["tar","xopf",f"{extraPath}/{validationDataPath}"],shell=False)
+      bash(["tar","xopf",f"{extraPath}/{validationDataPath}","--directory",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
       #!unzip -qq {extraPath}/{validationDataPath}
