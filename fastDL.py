@@ -79,7 +79,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
-      bash(["unzip",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}","-d"],shell=False)
+      bash(["unzip","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}"],shell=False)
   if validationDataPath != "":
     extraPath = name
     print(f"copying {validationDataPath}")
