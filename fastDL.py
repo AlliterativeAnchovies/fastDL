@@ -11,6 +11,7 @@ import spacy
 import html
 import subprocess
 import os
+import shutil as copier
 
 spacy.load("en")
 re1 = re.compile(r'  +')
@@ -22,8 +23,9 @@ def loadTextFile(fileName):
 def bashLS(directory):
   return subprocess.check_output(["ls","-1",directory],shell=True).decode("utf-8").split("\n")[:-1]
 
-def bashCP(cpFrom,cpTo,copyOverExisting = True):
-  subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
+def bashCP(cpFrom,cpTo):
+  #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
+  copier.copy(cpFrom,cpTo)
 
 def bash(inputs):
   return subprocess.check_output(inputs,shell=True)
