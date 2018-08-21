@@ -23,7 +23,7 @@ Here is a quick example of code you can run in colaboratoy right now to make a d
 
 modelDirec = ModelDirectory("dogsVcats",trainingDataPath = "dogscats.zip",validationDataPath = "")
 
-modelDirec.extractJumbledValidation(["dogscats","train"],"dogscats/valid/.")
+modelDirec.extractJumbledValidation("dogscats/train","dogscats/valid/.")
 
 theTask = modelDirec.giveTask("classification","dogscats/train",folderCategories=["cats","dogs"])
 
