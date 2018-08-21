@@ -89,10 +89,10 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       print("WHY THE HELL IS NOTHING PRINTING????????")
       try:
         #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
-	print("--------")
-	print('/'.join((trainingDataPath.split('/')[:-1])))
-	print(f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}")
-	print("--------")
+        print("--------")
+        print('/'.join((trainingDataPath.split('/')[:-1])))
+        print(f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}")
+        print("--------")
 	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
