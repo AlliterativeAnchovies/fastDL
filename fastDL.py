@@ -87,8 +87,11 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
       try:
         #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
-	print(f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}")
-	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
+	print("--------")
+	print('/'.join((trainingDataPath.split('/')[:-1])))
+	print(f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}")
+	print("--------")
+	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
       trainingDataPath = trainingDataPath[:-3]
@@ -96,7 +99,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       print(f"unzipping {trainingDataPath}")
       #!tar xopf {extraPath}/{trainingDataPath}
       #bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"],shell=False)
-      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
+      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       #!unzip -qq {extraPath}/{trainingDataPath}
@@ -114,7 +117,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bashGZIP(f"{extraPath}/{validationDataPath}")
       try:
         #bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"],shell=False)
-	bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
+	bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
       except:
         pass
       validationDataPath = validationDataPath[:-3]
@@ -122,7 +125,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       print(f"unzipping {validationDataPath}")
       #!tar xopf {extraPath}/{validationDataPath}
       #bash(["tar","xopf",f"{extraPath}/{validationDataPath}"],shell=False)
-      bash(["tar","xopf",f"{extraPath}/{validationDataPath}","--directory",f"{extraPath}/{'/'.join(validationDataPath.split('/')[:-1])}"],shell=False)
+      bash(["tar","xopf",f"{extraPath}/{validationDataPath}","--directory",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
       #!unzip -qq {extraPath}/{validationDataPath}
