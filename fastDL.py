@@ -95,7 +95,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
         print("--------")
         bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
       except:
-	pass #for some stupid reason, gzip works but throws an error
+        pass #for some stupid reason, gzip works but throws an error
       print("WHY THE HELL IS NOTHING PRINTING????????")
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
