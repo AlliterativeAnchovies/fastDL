@@ -78,7 +78,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}"])
       bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
   if validationDataPath != "":
-    extraPath = mimicCDOnPath(extraPath,"..")
+    extraPath = name
     print(f"copying {validationDataPath}")
     bashCP(f"{validationDataPath}",f"{extraPath}/validationData")
     extraPath = mimicCDOnPath(extraPath,"validationData")
