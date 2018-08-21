@@ -1,0 +1,16 @@
+# fastDL
+My small library to quickly grab and prepare data for machine learning, built on top of fastAI
+
+If you want to see how to use it, check out fastDL_examples.ipyn - I would recommend opening it in Colab because the github view doesn't format well.
+
+The general workflow will look like this:
+1) Download the dataset you want to train a model on
+2) Create an instance of the ModelDirectory class
+3) Declare a "Task" for your ModelDirectory
+4) Tell the Task to create and train a fastai model.
+
+Right now the library is fairly limited - it only works for images and text data (especially images) and there isn't much customizability.  However, if you need to customize it more I made sure the Task class has every internal variable exposed and relatively clearly named, so you can manually edit things between the steps
+
+I am currently updating this fairly frequently.  My current goal is have the library allow you to easily predict image data and explore the false positives/etc, after that I'll focus more on text.
+
+Dependencies: fastAI, spacy
