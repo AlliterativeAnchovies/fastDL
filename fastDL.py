@@ -34,10 +34,7 @@ def bashLS(directory):
 def bashCP(cpFrom,cpTo):
   #subprocess.check_output(["cp","-r","-f" if copyOverExisting else "-n",cpFrom,cpTo],shell=True)
   if os.path.isdir(cpFrom):
-    filesInDirectory = bashLS(cpFrom)
-    os.mkdir(os.path.join(cpTo,cpFrom.split('/')[-1]))
-    for f in filesInDirectory:
-      bashCP(os.path.join(cpFrom,f),os.path.join(cpTo,cpFrom))
+    shutil.copytree(cpFrom,cpTo)
   else:
     shutil.copy(cpFrom,cpTo)
 
