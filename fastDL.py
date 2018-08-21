@@ -26,10 +26,12 @@ def bashLS(directory):
 
 def bashCP(cpFrom,cpTo):
   if os.path.isdir(cpFrom):
+    if os.path.exists(cpTo):
+        shutil.rmtree(cpTo)
     shutil.copytree(cpFrom,cpTo)
   else:
     shutil.copy(cpFrom,cpTo)
-	
+
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
 
@@ -75,7 +77,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       bash(["tar","xopf",f"{extraPath}/{trainingDataPath}","--directory",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
-      bash(["unzip","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}"],shell=False)
+      bash(["unzip","-o","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}"],shell=False)
   if validationDataPath != "":
     extraPath = name
     print(f"copying {validationDataPath}")
@@ -93,7 +95,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       bash(["tar","xopf",f"{extraPath}/{validationDataPath}","--directory",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
-      bash(["unzip","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"],shell=False)
+      bash(["unzip","-o","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"],shell=False)
   #%cd ../..
   print("Finished")
 
@@ -398,8 +400,8 @@ class Task:
       self.fastAIModel.metrics = [accuracy]
     else:
       print("Error - Task has no type.  You can fix this with Task.setType('IMAGE' or 'TEXT')")
-		  
-		  
+  
+  
 
   def trainModel(self,learningRate = 0.2, epochs = 1, startingCycleEpochLength = 1, subsequentCycleEpochLengthMultiplier = 1):
     print("Starting training...  This may take a long time.")
@@ -422,19 +424,19 @@ class Task:
 
   #Given an absolute file name, it will predict the output
   def predictFromImageFile(self,fileName): return self.predictFromArray(self.curTransformsFromModel(open_image(fileName)))
-  
+
   def saveModel():
     self.fastAIModel.save(f"{self.direcIn.name}/models/{self.name}")
   
   def loadModel():
     self.fastAIModel = ConvLearner.pretrained(self.curArchitecture, self.fastAIData).load(f"{self.direcIn.name}/models/{self.name}")
   
-  
+
   #The grab random display code is taken pretty much verbatim from here, although names changed to fit with theme
   #https://github.com/fastai/fastai/blob/master/courses/dl1/lesson1.ipynb
   #def randomByMask(self,mask,amount = 4): return np.random.choice(np.where(mask)[0], amount, replace=False)
   #def getRandomValidationFromCorrectness(self,is_correct=True,amount = 4): return self.randomByMask((self.booleanPredictions == self.fastAIData.val_y)==is_correct, amount)
-  
+
   def plots(self,ims, figsize=(12,6), rows=1, titles=None):
     f = plt.figure(figsize=figsize)
     for i in range(len(ims)):
@@ -510,11 +512,16 @@ class ModelDirectory:
     return None
   
   def extractJumbledValidation(self,foldersToPrepend,fileLocation):
+    print("Extracting...")
     curdirec = f"{self.name}/validationData"
-    stringToAppend = "/".join(foldersToPrepend)
+    stringToAppend = ""
+    if isinstance(foldersToPrepend,str):#if passed in "a/string/like/this"
+      stringToAppend = foldersToPrepend
+      foldersToPrepend = stringToAppend.split("/")
+    else:#if passed in ["a","list","of","nested","directories"]
+      stringToAppend = "/".join(foldersToPrepend)
     for folder in foldersToPrepend:
       makeDirectory(f"{curdirec}/{folder}")
-      mimicCDOnPath(curdirec,folder)
-    print(f"{self.name}/validationData/{stringToAppend}")
+      curdirec = mimicCDOnPath(curdirec,folder)
     bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
-                     
+    print("Extracting over.")
