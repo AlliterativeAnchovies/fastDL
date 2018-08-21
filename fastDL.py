@@ -553,6 +553,7 @@ class ModelDirectory:
       #%cd {folder}
       mimicCDOnPath(curdirec,folder)
     #%cd /{curdirec}/{self.name}
+    print(f"{self.name}/validationData/{stringToAppend}")
     bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
     #%cd /{curdirec}
                      
