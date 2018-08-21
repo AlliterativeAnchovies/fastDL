@@ -87,6 +87,7 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
       try:
         #bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"],shell=False)
+	print(f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}")
 	bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{'/'.join(trainingDataPath.split('/')[:-1])}"],shell=False)
       except:
 	pass #for some stupid reason, gzip works but throws an error
