@@ -32,7 +32,10 @@ def bashCP(cpFrom,cpTo):
       bashCP(f"{cpFrom[:-2]}/{f}",cpTo)
   else:#copying file
     copier.copy(cpFrom,cpTo)"""
-  copytree(cpFrom,cpTo)
+  if os.path.isdir(cpFrom):
+    copytree(cpFrom,cpTo)
+  else:
+    copier.copy(cpFrom,cpTo)
 
 #https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
 def copytree(src, dst, symlinks=False, ignore=None):
