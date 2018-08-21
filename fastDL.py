@@ -11,7 +11,7 @@ import spacy
 import html
 import subprocess
 import os
-import shutil as copier
+import shutil
 import gzip
 
 spacy.load("en")
@@ -31,11 +31,11 @@ def bashCP(cpFrom,cpTo):
     for f in bashLS(cpFrom[:-2]):
       bashCP(f"{cpFrom[:-2]}/{f}",cpTo)
   else:#copying file
-    copier.copy(cpFrom,cpTo)"""
+    shutil.copy(cpFrom,cpTo)"""
   if os.path.isdir(cpFrom):
     copytree(cpFrom,cpTo)
   else:
-    copier.copy(cpFrom,cpTo)
+    shutil.copy(cpFrom,cpTo)
 
 #https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -44,14 +44,11 @@ def copytree(src, dst, symlinks=False, ignore=None):
     d = os.path.join(dst, item)
     print(f"{s},{d}")
     if os.path.exists(d):
-      print(d)
       shutil.rmtree(d)
     if not os.path.isdir(s):
-      copier.copy(s,d)
+      shutil.copy(s,dst)
     elif os.path.isdir(s):
-      copier.copytree(s, d, symlinks, ignore)
-    #else:
-    #  copier.copy(s,d)
+      shutil.copytree(s, d, symlinks, ignore)
 	
 def bash(inputs,shell=True):
   return subprocess.check_output(inputs,shell=shell)
