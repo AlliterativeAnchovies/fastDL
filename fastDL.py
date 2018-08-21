@@ -42,6 +42,8 @@ def copytree(src, dst, symlinks=False, ignore=None):
   for item in os.listdir(src):
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
+    if os.path.exists(d):
+      shutil.rmtree(d)
     if not os.path.isdir(s):#one would think os.listdir would only give directories
       copier.copy(s,d)      #however, one would be wrong
     elif os.path.isdir(s):
