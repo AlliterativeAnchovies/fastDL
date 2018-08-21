@@ -29,7 +29,7 @@ def bashCP(cpFrom,cpTo):
   copier.copy(cpFrom,cpTo)
 	
 def bash(inputs):
-  return subprocess.call(inputs)
+  return subprocess.check_output(inputs,shell=True)
 
 def makeDirectory(directory):
   if not os.path.exists(directory):
@@ -63,18 +63,20 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     extraPath = mimicCDOnPath(extraPath,"trainingData")
     if trainingDataPath[-3:] == ".gz":
       print(f"unzipping {trainingDataPath}")
-      !gzip -d {extraPath}/{trainingDataPath}
+      #!gzip -d {extraPath}/{trainingDataPath}
       #bash(["gzip","-d",f"{extraPath}/{trainingDataPath}"])
       #bashGZIP(f"{extraPath}/{trainingDataPath}")
+      bash(["gzip",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
       trainingDataPath = trainingDataPath[:-3]
     if trainingDataPath[-4:] == ".tar":
       print(f"unzipping {trainingDataPath}")
-      !tar xopf {extraPath}/{trainingDataPath}
-      #bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"])
+      #!tar xopf {extraPath}/{trainingDataPath}
+      bash(["tar","xopf",f"{extraPath}/{trainingDataPath}"])
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
-      !unzip -qq {extraPath}/{trainingDataPath}
+      #!unzip -qq {extraPath}/{trainingDataPath}
       #bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}"])
+      bash(["unzip","-qq",f"{extraPath}/{trainingDataPath}","-d",f"{extraPath}/{trainingDataPath[:-3]}"])
   if validationDataPath != "":
     extraPath = mimicCDOnPath(extraPath,"..")
     print(f"copying {validationDataPath}")
@@ -82,18 +84,20 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     extraPath = mimicCDOnPath(extraPath,"validationData")
     if validationDataPath[-3:] == ".gz":
       print(f"unzipping {validationDataPath}")
-      !gzip -d {extraPath}/{validationDataPath}
+      #!gzip -d {extraPath}/{validationDataPath}
       #bash(["gzip","-d",f"{extraPath}/{validationDataPath}"])
       #bashGZIP(f"{extraPath}/{validationDataPath}")
+      bash(["gzip",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
       validationDataPath = validationDataPath[:-3]
     if validationDataPath[-4:] == ".tar":
       print(f"unzipping {validationDataPath}")
-      !tar xopf {extraPath}/{validationDataPath}
-      #bash(["tar","xopf",f"{extraPath}/{validationDataPath}"])
+      #!tar xopf {extraPath}/{validationDataPath}
+      bash(["tar","xopf",f"{extraPath}/{validationDataPath}"])
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
-      !unzip -qq {extraPath}/{validationDataPath}
+      #!unzip -qq {extraPath}/{validationDataPath}
       #bash(["unzip","-qq",f"{extraPath}/{validationDataPath}"])
+      bash(["unzip","-qq",f"{extraPath}/{validationDataPath}","-d",f"{extraPath}/{validationDataPath[:-3]}"])
   #%cd ../..
   print("Finished")
 
