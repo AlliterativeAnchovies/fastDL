@@ -43,8 +43,10 @@ def copytree(src, dst, symlinks=False, ignore=None):
     s = os.path.join(src, item)
     d = os.path.join(dst, item)
     if os.path.isdir(s):
+      print(d)
       copier.copytree(s, d, symlinks, ignore)
     else:
+      print(d)
       copier.copy(s, d)
 	
 def bash(inputs,shell=True):
