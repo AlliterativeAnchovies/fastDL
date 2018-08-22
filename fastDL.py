@@ -434,6 +434,38 @@ class Task:
   def predictFromArray(self,arrayToPredictFrom):
     #return list(zip(self.allClasses,np.exp(self.fastAIModel.predict_array(arrayToPredictFrom[None])[0])))
     return Prediction(self.allClasses,self.fastAIModel.predict_array(arrayToPredictFrom[None])[0])
+  
+  def predictFromText(self, text):
+    #fastAI has a function predict_text which fails because it does not put things to cuda
+    #this is that function but it does put things on cuda
+    #for some reason it always returns the same values, so there's another bug somewhere probably
+    #:(
+  
+    # prefix text with tokens:
+    #   xbos: beginning of sentence
+    #   xfld 1: we are using a single field here
+    input_str = 'xbos xfld 1 ' + text
+    # predictions are done on arrays of input.
+    # We only have a single input, so turn it into a 1x1 array
+    texts = [input_str]
+    # tokenize using the fastai wrapper around spacy
+    tok = Tokenizer().proc_all_mp(partition_by_cores(texts))
+    # turn into integers for each word
+    encoded = [self.stringToInt[p] for p in tok[0]]
+    # we want a [x,1] array where x is the number
+    #  of words inputted (including the prefix tokens)
+    ary = np.reshape(np.array(encoded),(-1,1))
+    # turn this array into a tensor
+    tensor = torch.from_numpy(ary)
+    # wrap in a torch Variable
+    variable = Variable(tensor)
+    variable = variable.cuda()
+    # do the predictions
+    self.fastAIModel.model.cuda()#just incase, idk if necessary
+    predictions = self.fastAIModel.model(variable)
+    # convert back to numpy
+    numpy_preds = predictions[0].data.cpu().numpy()
+    return numpy_preds#softmax(numpy_preds[0])[0]
 
   #Given an absolute file name, it will predict the output
   def predictFromImageFile(self,fileName): return self.predictFromArray(self.curTransformsFromModel(open_image(fileName)))
