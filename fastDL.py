@@ -4,6 +4,8 @@ from fastai.text import *
 from fastai.dataset import *
 from fastai.conv_learner import *
 from fastai import lm_rnn
+from fastai.structured import *
+from fastai.column_data import *
 import matplotlib.pyplot as plt
 import PIL
 import spacy
@@ -77,6 +79,10 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if trainingDataPath[-4:] == ".zip":
       print(f"unzipping {trainingDataPath}")
       bash(["unzip","-o","-d",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{trainingDataPath}"],shell=False)
+    if trainingDataPath[-4:] == ".tgz":
+      print(f"unzipping {trainingDataPath}")
+      bash(["tar","zxvf",f"{extraPath}/{trainingDataPath}","-C",f"{extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))}"],shell=False)
+      #os.system(f"tar zxvf {extraPath}/{'/'.join((trainingDataPath.split('/')[:-1]))} -C {extraPath}/{trainingDataPath}")
   if validationDataPath != "":
     extraPath = name
     print(f"copying {validationDataPath}")
@@ -95,6 +101,10 @@ def createModelDirectory(name,trainingDataPath = "",validationDataPath = ""):
     if validationDataPath[-4:] == ".zip":
       print(f"unzipping {validationDataPath}")
       bash(["unzip","-o","-d",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-qq",f"{extraPath}/{validationDataPath}"],shell=False)
+    if validationDataPath[-4:] == ".tgz":
+      print(f"unzipping {trainingDataPath}")
+      #bash(["tar","zxvf",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}","-C",f"{extraPath}/{validationDataPath}"],shell=False)
+      bash(["tar","zxvf",f"{extraPath}/{validationDataPath}","-C",f"{extraPath}/{'/'.join((validationDataPath.split('/')[:-1]))}"],shell=False)
   #%cd ../..
   print("Finished")
 
@@ -115,41 +125,56 @@ class Task:
     return x.split('.')[0]
   
   def __init__(self,direcIn,name,rawData = "",annotations = ""):
-    self.name = name
-    self.direcIn = direcIn
-    self.rawData = rawData
-    self.annotations = annotations
-    self.allDataFiles_t = []
-    self.allAnnotationFiles_t = []
-    self.allDataFiles_v = []
-    self.allAnnotationFiles_v = []
-    self.trainingDict = {}
-    self.validationDict = {}
-    self.allClasses = []
-    self.fastAIData = None
-    self.csvValidationIndices = []
-    self.fastAIModel = None
-    self.curArchitecture = resnet34
-    self.validationPredictions = None
-    self.booleanPredictions = []
-    self.predictionProbabilities = []
-    self.allDataIsConsideredTraining = True
-    self.curTransformsFromModel = None
-    self.curDataSize = 64
-    self.lastCSVName = None
-    self.tokenizerData = None
-    self.trainingDataFrame = None
-    self.validationDataFrame = None
-    self.intToString = None
-    self.stringToInt = None
-    self.wordFrequency = None
-    self.tokenizedTraining = None
-    self.tokenizedTrainingLabels = None
-    self.tokenizedValidation = None
-    self.tokenizedValidationLabels = None
-    self.typeOfData = None
-    self.preTokenizedTraining = None
-    self.preTokenizedValidation = None
+    self.name = name                          #name of task (String)
+    self.direcIn = direcIn                    #ModelDirectory
+    self.rawData = rawData                    #Location of data within the trainingData and validationData folders (String)
+    self.annotations = annotations            #Location of annotations within those folders (String)
+    self.allDataFiles_t = []                  #List of all the training data files ([String])
+    self.allAnnotationFiles_t = []            #List of all the training annotation files ([String])
+    self.allDataFiles_v = []                  #List of all the validation data files ([String])
+    self.allAnnotationFiles_v = []            #List of all the validation annotation files ([String])
+    self.trainingDict = {}                    #IF CATEGORICAL DATA:
+                                                  #Dictionaary matching name to pandas dataframe read from csv f"{name}.csv" {String:Pandas}
+                                              #ELIF THERE IS ANNOTATION DATA:
+                                                  #Dictionary matching training data filename to validation data filename {String:String}
+                                              #ELSE: Empty {}
+    self.validationDict = {}                  #Same as above, but for validation data, not training data
+    self.allClasses = []                      #List of human-readable classnames, [String]
+    self.fastAIData = None                    #fastAI-readable data.  Type will depend on what type of data you're using, see fastAI docs
+    self.csvValidationIndices = []            #IF CALLED self.makeCSV():
+                                                  #Contains a list of indices that should be used for validation rather than training [Int]
+                                              #ELSE: Empty []
+                                              #IF [], it is passed as None into fastAI code, which will then automatically grab a random portion of indices.
+    self.fastAIModel = None                   #The actual model.  Perhabs more accurately called a PyTorch model, but it is created using fastAI
+    self.curArchitecture = resnet34           #Architecture of the aforementioned model
+    self.validationPredictions = None         #Predictions on the validation set, log scale.  This is currently DEPRECATED
+    self.booleanPredictions = []              #Same as above, but 0 or 1 instead of log scale.  This is currently DEPRECATED
+    self.predictionProbabilities = []         #Same as above, but between 0 and 1. [[Float]]
+    self.allDataIsConsideredTraining = False  #IF TRUE: We let fastAI create its own validation set from the union of our training and validation sets
+    self.curTransformsFromModel = None        #Data augmentation, required to predict on things not in the training of validation sets.
+    self.curDataSize = 64                     #IF IMAGE DATA: curDataSize by curDataSize will be the dimensions images are scaled to.
+    self.lastCSVName = None                   #The name of the last CSV created by the Task, which it will load data from when creating a model.
+    self.trainingDataFrame = None             #IF TEXT DATA: A pandas dataframe consisting of training data for the model.
+                                              #IF CATEGORICAL DATA: same thing but also includes validation data (indices of which are stored in 
+                                                   #csvValidationIndices).  Has the dependant variable removed (the one you're predicting)
+    self.validationDataFrame = None           #IF TEXT DATA: Same as above, but for validation
+                                              #IF CATEGORICAL DATA: contains the dependant variable
+    self.intToString = None                   #IF TEXT DATA: A dictionary mapping numbers to their corresponding tokens ({Int:String})
+    self.stringToInt = None                   #IF TEXT DATA: A dictionary mapping tokens to their corresponding numbers ({String:Int})
+    self.wordFrequency = None                 #IF TEXT DATA: Keeps track of the frequencies of tokens ([(String,Int)])
+    self.tokenizedTraining = None             #IF TEXT DATA: Training data, tokenized.  ([[Int]])
+    self.tokenizedTrainingLabels = None       #IF TEXT DATA: Training data, labeled.  ([[Int]])
+    self.tokenizedValidation = None           #same
+    self.tokenizedValidationLabels = None     #same
+    self.typeOfData = None                    #"IMAGE" if image data, "TEXT" if text data, "CATEGORICAL" if categorical ddata
+    self.preTokenizedTraining = None          #Meant for debugging - same as tokenizedTraining but not tokenized
+    self.preTokenizedValidation = None        #Meant for debugging - ditto
+    self.discreteVariables = None             #IF CATEGORICAL DATA: Fields that are not continuous in the dataframe
+    self.continuousVariables = None           #IF CATEGORICAL DATA: Opposite ditto
+            
+    """TODO: Instead of recording lastCSVName, we should immediately make a dataframe of it, trainingDataFrame and validationDataFrame"""
+    """Wrap makeCSV() in another function, makeDataFrame() to do both of this.  That way we keep our # of variables down and their uses consistent,"""
+    """As well as getting rid of the error-prone self.lastCSVName"""
   
   def copy(self,newName,appendToDirec = True):
     #Creates an exact copy of this task with name newName,
@@ -179,7 +204,6 @@ class Task:
     toReturn.curTransformsFromModel = self.curTransformsFromModel
     toReturn.curDataSize = self.curDataSize
     toReturn.lastCSVName = self.lastCSVName
-    toReturn.tokenizerData = self.tokenizerData
     toReturn.trainingDataFrame = self.trainingDataFrame
     toReturn.validationDataFrame = self.validationDataFrame
     toReturn.typeOfData = self.typeOfData
@@ -192,6 +216,8 @@ class Task:
     toReturn.tokenizedTrainingLabels = self.tokenizedTrainingLabels
     toReturn.tokenizedValidation = self.tokenizedValidation
     toReturn.tokenizedValidationLabels = self.tokenizedValidationLabels
+    toReturn.discreteVariables = self.discreteVariables
+    toReturn.continuousVariables = self.continuousVariables
     if appendToDirec: self.direcIn.tasks.append(toReturn)
     return toReturn
   
@@ -267,8 +293,6 @@ class Task:
     print("De-annotation complete")
 
   def mergeTrainingAndValidation(self):
-    #self.trainingDict.update(self.validationDict)
-    #self.validationDict = []
     self.allDataIsConsideredTraining = True
   
   def makeCSV(self,csvname):
@@ -376,6 +400,20 @@ class Task:
   
   def setType(self,typename):
     self.typeOfData = typename
+            
+  def prepCategoricalDataForFastAI(self,categoryToBreakOff):
+    self.typeOfData = "CATEGORICAL"
+    if self.validationDict["merged"] is not None:
+      self.trainingDataFrame = pd.concat([self.validationDict["merged"],self.trainingDict["merged"]], axis=1, join='inner')
+      self.csvValidationIndices = range(0,len(self.validationDict["merged"]))
+    else:
+      self.trainingDataFrame = self.trainingDict["merged"]
+      self.csvValidationIndices = random.choice(range(0,len(self.trainingDict["merged"])))[:len(self.trainingDict["merged"]) // 5]
+    for v in self.discreteVariables: self.trainingDataFrame[v] = self.trainingDataFrame[v].apply(lambda x: x.astype('category').cat.as_ordered())
+    for v in self.continuousVariables: self.trainingDataFrame[v] = self.trainingDataFrame[v].apply(lambda x: x.fillna(0).astype('float32'))
+    for v in self.trainingDataFrame:
+      if not is_numeric_dtype(type(v)): print(f"{v}:{type(v)}")
+    self.trainingDataFrame, self.validationDataFrame, _, self.curTransformsFromModel = proc_df(self.trainingDataFrame, categoryToBreakOff, do_scale=True)
 
   def createModel(self):
     if self.typeOfData == "IMAGE":
@@ -407,6 +445,8 @@ class Task:
       self.fastAIModel.reg_fn = partial(seq2seq_reg, alpha=2, beta=1)
       self.fastAIModel.clip=25.
       self.fastAIModel.metrics = [accuracy]
+    elif self.typeOfData == "CATEGORICAL":
+      self.fastAIModel = ColumnarModelData.from_data_frame(f"{self.direcIn.name}/misc", self.csvValidationIndices, self.trainingDataFrame, np.log(self.validationDataFrame).astype(np.float32), cat_flds=self.continuousVariables, bs=128)
     else:
       print("Error - Task has no type.  You can fix this with Task.setType('IMAGE' or 'TEXT')")
   
@@ -470,13 +510,75 @@ class Task:
   #Given an absolute file name, it will predict the output
   def predictFromImageFile(self,fileName): return self.predictFromArray(self.curTransformsFromModel(open_image(fileName)))
 
-  def saveModel():
+  def saveModel(self):
     self.fastAIModel.save(f"{self.direcIn.name}/models/{self.name}")
 
-  def loadModel():
+  def loadModel(self):
     self.fastAIModel = ConvLearner.pretrained(self.curArchitecture, self.fastAIData).load(f"{self.direcIn.name}/models/{self.name}")
 
-
+  def loadTrainingCSVsAsPandas(self,csvs):
+    self.trainingDict = {fname: pd.read_csv(f"{self.direcIn.name}/trainingData/{self.rawData}/{fname}.csv", low_memory = False) for fname in csvs}
+            
+  def loadValidationCSVsAsPandas(self,csvs):
+    self.validationDict = {fname: pd.read_csv(f"{self.direcIn.name}/trainingData/{self.rawData}/{fname}.csv", low_memory = False) for fname in csvs}
+            
+  def peekAtCategoricalData(self,which = [],training=True,size=5):
+    if not which:#if empty
+      which = [k for k,v in (self.trainingDict.items() if training else self.validationDict.items())]
+    if training: 
+      for t in which: display(self.trainingDict[t].head(size))
+    else: 
+      for t in which: display(self.validationDict[t].head(size))
+            
+  def deepPeekAtCategoricalData(self,which,training=True):
+    print("Due to a bug or update in pandas, this no longer works")
+    if not which:#if empty
+      which = [k for k,v in (self.trainingDict.items() if training else self.validationDict.items())]
+    if training: 
+      for t in which: display(DataFrameSummary(self.trainingDict[t]).summary())
+    else: 
+      for t in which: display(DataFrameSummary(self.validationDict[t]).summary())
+            
+  def getAllCategoricalColumns(self):
+    toReturn = []
+    for k,v in self.trainingDict.items():
+      toReturn = toReturn + v.columns.values.tolist()
+    return list(set(toReturn))
+            
+  def editCategoricalData(self,tableName,columnName,funcToPerform,newcol=None,training=True):
+    reldf = None
+    if training:
+      reldf = self.trainingDict[tableName]
+    else:
+      reldf = self.validationDict[tableName]
+    reldf[columnName if newcol is None else newcol] = reldf[columnName].apply(funcToPerform)
+            
+  def mergeCategoricalDataFrames(self):
+    trlist = [v for k,v in self.trainingDict.items()]
+    self.trainingDict = {"merged":pd.concat(trlist, axis=1, join='inner')}
+    vallist = [v for k,v in self.validationDict.items()]
+    self.validationDict = {"merged":pd.concat(trlist, axis=1, join='inner')} 
+            
+  def expandCategoricalDates(self,nameOfDateColumn):
+    for d in [self.trainingDict,self.validationDict]:
+      for k,v in d.items():
+        if v[nameOfDateColumn] is None: continue
+        add_datepart(v, nameOfDateColumn, drop=False)
+    
+  def setCategoricalVariables(self,discrete,continuous):
+    self.continuousVariables = continuous
+    self.discreteVariables = discrete
+    if self.trainingDict["merged"] is None:
+      print("ERROR: Must be called after mergeCategoricalDataFrames")
+      return
+    self.trainingDict["merged"] = self.trainingDict["merged"][continuous+discrete]
+    for col in continuous:
+      self.trainingDict["merged"][col].fillna(0).astype('float32')
+    if self.validationDict["merged"] is None: return
+    self.validationDict["merged"] = self.validationDict["merged"][continuous+discrete]
+    for col in continuous:
+      self.validationDict["merged"][col].fillna(0).astype('float32')
+            
   #The grab random display code is taken pretty much verbatim from here, although names changed to fit with theme
   #https://github.com/fastai/fastai/blob/master/courses/dl1/lesson1.ipynb
   #def randomByMask(self,mask,amount = 4): return np.random.choice(np.where(mask)[0], amount, replace=False)
@@ -543,10 +645,21 @@ class ModelDirectory:
     self.tasks = []
     if create: createModelDirectory(name,trainingDataPath,validationDataPath)
   
-  def giveTask(self,taskname,rawData = "",annotations = "",folderCategories = []):
+  def giveTask(self,taskname,rawData = "",annotations = "",folderCategories = [],trainingCSVNames = [],validationCSVNames = []):
+    """
+      taskname: ID given to task
+      rawData: filepath to training/validation data location, assuming root directory is self.direcIn.name/trainingData and self.direcIn.name/validationData
+      ^^^ The above two are basically always needed, although if you're lucky rawData can just be ""
+      folderCategories: If you have files in folders that denote the label of the file, use this.  Works for text or image data.
+      trainingCSVNames/validationCSVNames: Names of csvs that contain the categorical data.  At the moment it is mutually exclusive with folderCategories
+        and is only meant to be used for categorical data
+    """
     newTask = Task(self,taskname,rawData,annotations)
     if folderCategories: #if folderCategories is not empty
       newTask.makeCSVFromFolderCategories(self.name,folderCategories)
+    if trainingCSVNames:
+      newTask.loadTrainingCSVsAsPandas(trainingCSVNames)
+      newTask.loadValidationCSVsAsPandas(validationCSVNames)
     self.tasks.append(newTask)
     return newTask
   
@@ -570,4 +683,6 @@ class ModelDirectory:
       curdirec = mimicCDOnPath(curdirec,folder)
     bashCP(f"{self.name}/trainingData/{fileLocation}",f"{self.name}/validationData/{stringToAppend}")
     print("Extracting over.")
+                     
+                     
 
